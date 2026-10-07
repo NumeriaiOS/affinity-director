@@ -14,7 +14,7 @@ from .services.planner import build_mock_plan
 from .services.qloo import QlooClient, QlooError, build_insights_payload
 
 BASE_DIR = Path(__file__).resolve().parent
-app = FastAPI(title="Affinity Director", version="0.4.1")
+app = FastAPI(title="Affinity Director", version="0.5.0")
 
 
 @app.middleware("http")
@@ -70,7 +70,25 @@ class QlooExploreRequest(BaseModel):
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "qloo_configured": bool(settings.qloo_api_key), "version": app.version}
+    return {
+        "status": "ok",
+        "version": app.version,
+        "qloo_configured": settings.qloo_configured,
+        "qloo_live_enabled": settings.qloo_live_enabled,
+        "qloo_live_ready": settings.qloo_live_ready,
+    }
+
+
+@app.get("/ready")
+def ready() -> dict:
+    return {
+        "status": "ready",
+        "mode": "live" if settings.qloo_live_ready else "demo_fixture",
+        "qloo_configured": settings.qloo_configured,
+        "qloo_live_enabled": settings.qloo_live_enabled,
+        "qloo_live_ready": settings.qloo_live_ready,
+        "live_validation_required": settings.qloo_configured and not settings.qloo_live_enabled,
+    }
 
 
 @app.post("/api/plan")
@@ -133,8 +151,8 @@ def agent_compare_demo(request: QlooExploreRequest) -> dict:
 def agent_compare(request: QlooExploreRequest) -> dict:
     baseline = build_generic_baseline(signals=request.signals, location=request.location)
     client = QlooClient()
-    provider = client if client.configured else FixtureQlooProvider()
-    provider_mode = "live" if client.configured else "demo_fixture"
+    provider = client if settings.qloo_live_ready else FixtureQlooProvider()
+    provider_mode = "live" if settings.qloo_live_ready else "demo_fixture"
     try:
         grounded = execute_agent(
             provider,
@@ -146,19 +164,21 @@ def agent_compare(request: QlooExploreRequest) -> dict:
     except (QlooError, ValueError) as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
     return {
-        "mode": "comparison_live" if client.configured else "comparison_demo",
+        "mode": "comparison_live" if settings.qloo_live_ready else "comparison_demo",
         "baseline": baseline,
         "grounded": grounded,
         "metrics": comparison_metrics(baseline, grounded),
-        "warning": None if client.configured else "Synthetic Qloo fixture data only. Real Qloo data is required before making recommendation-quality claims.",
+        "warning": None if settings.qloo_live_ready else "Synthetic Qloo fixture data only. Real Qloo data is required before making recommendation-quality claims.",
     }
 
 
 @app.post("/api/qloo/explore")
 def qloo_explore(request: QlooExploreRequest) -> dict:
     client = QlooClient()
-    if not client.configured:
+    if not settings.qloo_configured:
         raise HTTPException(status_code=503, detail="QLOO_API_KEY is not configured; use agent/demo until registration is available")
+    if not settings.qloo_live_enabled:
+        raise HTTPException(status_code=503, detail="Qloo live mode is gated; run live validation, then set QLOO_LIVE_ENABLED=true")
     try:
         return execute_agent(client, signals=request.signals, location=request.location, take=request.take, mode="live")
     except (QlooError, ValueError) as exc:

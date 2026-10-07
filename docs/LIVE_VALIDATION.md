@@ -13,7 +13,7 @@ This gate must pass before making recommendation-quality claims from Qloo data.
 9. For the location-scoped venue query, inspect locality metadata and the returned place entities.
 10. Update parsers only from observed Qloo responses; never weaken validation merely to force a pass.
 11. Freeze the resulting evaluation set before comparing the grounded path with the generic baseline.
-12. Only after this gate passes should UI copy switch from synthetic/demo wording to live recommendation claims.
+12. Only after this gate passes, set `QLOO_LIVE_ENABLED=true` and restart the app. Merely configuring `QLOO_API_KEY` does not enable live recommendations.
 
 The live validator captures each domain response once and replays those exact responses through the full orchestrator. This avoids consuming duplicate API calls while validating the end-to-end normalization, scoring, coherence, blueprint, graph and verifier path.
 

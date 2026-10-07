@@ -69,7 +69,7 @@ function topInfluences(value){
 }
 
 async function init(){
-  try{const r=await fetch('/health');const d=await r.json();live=!!d.qloo_configured;modeText.textContent=live?'Qloo live':'Synthetic demo';runtimeHint.textContent=live?'Live Qloo data enabled · API v2':'Qloo key unavailable · using clearly labeled synthetic fixtures';}
+  try{const r=await fetch('/health');const d=await r.json();live=!!d.qloo_live_ready;modeText.textContent=live?'Qloo live':'Synthetic demo';runtimeHint.textContent=live?'Live Qloo data enabled · API v2':'Qloo key unavailable · using clearly labeled synthetic fixtures';}
   catch(e){modeText.textContent='Runtime unavailable';runtimeHint.textContent='Health check failed';}
 }
 

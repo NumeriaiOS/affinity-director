@@ -273,3 +273,25 @@ def test_agent_degrades_to_partial_when_one_domain_fails():
 def test_agent_fails_closed_when_every_domain_query_fails():
     with pytest.raises(QlooError, match="All Qloo domain queries failed"):
         execute_agent(AllFailQloo(), signals=["A24"], location="Milan", take=2, mode="live")
+
+from app.config import Settings, env_bool
+
+
+def test_live_mode_requires_key_and_explicit_enable(monkeypatch):
+    monkeypatch.setenv("QLOO_API_KEY", "test-key")
+    monkeypatch.setenv("QLOO_LIVE_ENABLED", "false")
+    gated = Settings()
+    assert gated.qloo_configured is True
+    assert gated.qloo_live_enabled is False
+    assert gated.qloo_live_ready is False
+
+    monkeypatch.setenv("QLOO_LIVE_ENABLED", "true")
+    enabled = Settings()
+    assert enabled.qloo_live_ready is True
+
+
+def test_env_bool_is_explicit(monkeypatch):
+    monkeypatch.setenv("EXAMPLE_BOOL", "yes")
+    assert env_bool("EXAMPLE_BOOL") is True
+    monkeypatch.setenv("EXAMPLE_BOOL", "random")
+    assert env_bool("EXAMPLE_BOOL") is False
