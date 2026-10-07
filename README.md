@@ -122,3 +122,15 @@ docker run --rm -p 8000:8000 -e QLOO_API_KEY='...' affinity-director
 ## License
 
 An open-source license must be selected before the repository is made public for submission. No license has been chosen yet.
+
+## Reproducible development checks
+
+From the repository root:
+
+```bash
+make test
+make eval
+make check
+```
+
+`make test` uses the repository-level pytest configuration, so imports resolve consistently from any shell. The synthetic evaluation validates orchestration invariants only; it does not make claims about real Qloo recommendation quality.
