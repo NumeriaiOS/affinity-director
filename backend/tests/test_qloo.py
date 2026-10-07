@@ -163,3 +163,39 @@ def test_demo_comparison_metrics_are_structural_only():
     assert metrics["baseline_domain_coverage"] == 4
     assert metrics["grounded_domain_coverage"] == 4
     assert "structural diagnostics" in metrics["note"]
+
+import io
+from urllib.error import HTTPError
+import app.services.qloo as qloo_module
+
+
+def test_qloo_client_retries_temporary_http_error(monkeypatch):
+    calls = []
+    sleeps = []
+
+    def fake_urlopen(request, timeout):
+        calls.append((request.full_url, timeout))
+        if len(calls) == 1:
+            raise HTTPError(request.full_url, 503, "temporary", {"Retry-After": "0"}, io.BytesIO(b'{"error":"temporary"}'))
+        return io.BytesIO(b'{"success":true,"results":{"entities":[]}}')
+
+    monkeypatch.setattr(qloo_module, "urlopen", fake_urlopen)
+    client = QlooClient(api_key="test", max_attempts=3, sleep_fn=sleeps.append)
+    result = client.insights({"filter.type": "urn:entity:artist"})
+    assert result["success"] is True
+    assert len(calls) == 2
+    assert sleeps == [0.0]
+
+
+def test_qloo_client_does_not_retry_bad_request(monkeypatch):
+    calls = []
+
+    def fake_urlopen(request, timeout):
+        calls.append(1)
+        raise HTTPError(request.full_url, 400, "bad request", {}, io.BytesIO(b'{"error":"bad"}'))
+
+    monkeypatch.setattr(qloo_module, "urlopen", fake_urlopen)
+    client = QlooClient(api_key="test", max_attempts=3, sleep_fn=lambda _: None)
+    with pytest.raises(QlooError, match="HTTP 400"):
+        client.insights({"filter.type": "urn:entity:artist"})
+    assert len(calls) == 1
