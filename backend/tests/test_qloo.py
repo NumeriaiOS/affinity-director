@@ -40,3 +40,39 @@ def test_normalize_entities_tolerates_response_variants():
         "subtype": None,
         "affinity": 0.91,
     }]
+
+from app.services.orchestrator import build_tasks, execute_agent, preview_agent
+
+
+class FakeQloo:
+    def __init__(self):
+        self.calls = []
+
+    def insights(self, payload):
+        self.calls.append(payload)
+        kind = payload["filter.type"].split(":")[-1]
+        return {
+            "results": {
+                "entities": [
+                    {"name": kind.title() + " Candidate", "entity_id": "id-" + kind, "type": payload["filter.type"], "affinity": 0.8}
+                ]
+            },
+            "query": {"explainability": {"source": "fixture"}},
+        }
+
+
+def test_agent_preview_builds_cross_domain_tasks():
+    result = preview_agent(signals=["Arctic Monkeys", "A24"], location="Milan", take=4)
+    assert len(result["tasks"]) == 4
+    assert {task["domain"] for task in result["tasks"]} == {"music", "venue", "brand", "film"}
+    venue = next(task for task in result["tasks"] if task["domain"] == "venue")
+    assert venue["payload"]["filter.location.query"] == "Milan"
+
+
+def test_agent_executes_all_tasks_and_preserves_explainability():
+    provider = FakeQloo()
+    result = execute_agent(provider, signals=["Arctic Monkeys", "A24"], location="Milan", take=3)
+    assert result["mode"] == "live"
+    assert len(provider.calls) == 4
+    assert len(result["items"]) == 4
+    assert set(result["explainability"]) == {"music", "venue", "brand", "film"}

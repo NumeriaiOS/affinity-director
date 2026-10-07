@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from .config import settings
 from .services.affinity import discover_cross_domain
 from .services.planner import build_mock_plan
+from .services.orchestrator import execute_agent, preview_agent
 from .services.qloo import QlooClient, QlooError, build_insights_payload
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -58,13 +59,18 @@ def qloo_query_preview(request: QlooPreviewRequest) -> dict:
     return {"mode": "preview", "endpoint": "/v2/insights", "method": "POST", "payload": payload}
 
 
+@app.post("/api/agent/preview")
+def agent_preview(request: QlooExploreRequest) -> dict:
+    return preview_agent(signals=request.signals, location=request.location, take=request.take)
+
+
 @app.post("/api/qloo/explore")
 def qloo_explore(request: QlooExploreRequest) -> dict:
     client = QlooClient()
     if not client.configured:
         raise HTTPException(status_code=503, detail="QLOO_API_KEY is not configured; use query-preview until registration is available")
     try:
-        return discover_cross_domain(client, signals=request.signals, location=request.location, take=request.take)
+        return execute_agent(client, signals=request.signals, location=request.location, take=request.take)
     except (QlooError, ValueError) as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
