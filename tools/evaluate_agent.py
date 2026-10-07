@@ -51,7 +51,8 @@ def evaluate_one(scenario: dict) -> dict:
         "high_confidence_ratio": round(sum(item["score_confidence"] == "high" for item in items) / len(items), 4) if items else 0,
         "mean_cultural_fit": round(sum(item["cultural_fit"] for item in items) / len(items), 2) if items else 0,
         "deterministic": digest(first) == digest(second),
-        "pass": len(domains) == 4 and len(ids) == len(set(ids)) and bool(items) and digest(first) == digest(second),
+        "verification_status": first.get("verification", {}).get("status"),
+        "pass": len(domains) == 4 and len(ids) == len(set(ids)) and bool(items) and digest(first) == digest(second) and first.get("verification", {}).get("status") == "complete",
     }
 
 
