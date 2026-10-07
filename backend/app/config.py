@@ -12,7 +12,7 @@ def env_bool(name: str, default: bool = False) -> bool:
 @dataclass(frozen=True)
 class Settings:
     qloo_api_key: str = field(default_factory=lambda: os.getenv("QLOO_API_KEY", ""))
-    qloo_base_url: str = field(default_factory=lambda: os.getenv("QLOO_BASE_URL", "https://api.qloo.com").rstrip("/"))
+    qloo_base_url: str = field(default_factory=lambda: os.getenv("QLOO_BASE_URL", "https://hackathon.api.qloo.com").rstrip("/"))
     qloo_live_enabled: bool = field(default_factory=lambda: env_bool("QLOO_LIVE_ENABLED", False))
 
     @property

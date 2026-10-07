@@ -21,7 +21,7 @@ def test_build_insights_payload_resolves_named_entities():
 
 
 def test_client_refuses_live_call_without_key():
-    client = QlooClient(api_key="", base_url="https://api.qloo.com")
+    client = QlooClient(api_key="", base_url="https://hackathon.api.qloo.com")
     with pytest.raises(QlooError, match="QLOO_API_KEY"):
         client.insights({"filter.type": "urn:entity:artist"})
 
