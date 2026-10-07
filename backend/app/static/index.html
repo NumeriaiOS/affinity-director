@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Affinity Director</title>
 <style>
-:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#111827;background:#f5f6f8}*{box-sizing:border-box}body{margin:0}.shell{max-width:1180px;margin:0 auto;padding:44px 24px 80px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:#6b7280;font-weight:800}.mode{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid #d1d5db;border-radius:999px;background:#fff;font-size:12px;font-weight:700;color:#4b5563}.dot{width:7px;height:7px;border-radius:50%;background:#9ca3af}.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:34px;align-items:end;margin:24px 0 30px}.hero h1{font-size:58px;line-height:.96;letter-spacing:-.06em;margin:0;max-width:800px}.hero p{font-size:17px;line-height:1.62;color:#4b5563;margin:0;max-width:470px}.card{background:white;border:1px solid #e5e7eb;border-radius:22px;box-shadow:0 18px 50px rgba(17,24,39,.055)}.composer{padding:22px}.fields{display:grid;grid-template-columns:1.5fr .5fr;gap:14px}.field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#6b7280;font-weight:800;margin-bottom:8px}.field input{width:100%;border:1px solid #e5e7eb;border-radius:13px;padding:13px 14px;font:inherit;outline:none;background:#fafafa}.field input:focus{border-color:#9ca3af;background:#fff}.actions{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #eee;padding-top:16px;margin-top:16px;gap:12px}.hint{color:#6b7280;font-size:13px;line-height:1.35}.actions button{border:0;border-radius:14px;background:#111827;color:white;font-weight:800;padding:13px 19px;cursor:pointer}.actions button:disabled{opacity:.55;cursor:default}.summary{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:28px}.summary h2{font-size:20px;margin:0;letter-spacing:-.02em}.summary small{color:#6b7280}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:14px}.item{padding:18px;min-height:238px;display:flex;flex-direction:column}.domain{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#6b7280;font-weight:800}.item h3{font-size:18px;line-height:1.22;margin:17px 0 10px}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto;padding-top:18px}.metric{border-top:1px solid #eee;padding-top:10px}.metric strong{display:block;font-size:25px;letter-spacing:-.04em}.metric span{display:block;font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;margin-top:2px}.confidence{font-size:12px;color:#4b5563;margin-top:11px}.influence{font-size:12px;line-height:1.45;color:#6b7280;margin-top:10px}.trace{margin-top:18px;padding:22px}.trace h2{font-size:16px;margin:0 0 14px}.step{display:grid;grid-template-columns:80px 140px 1fr;gap:10px;padding:10px 0;border-top:1px solid #f0f1f3;font-size:13px;line-height:1.4}.status{font-weight:800}.warn{margin-top:15px;padding:11px 13px;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;font-size:12px;color:#9a3412}.hidden{display:none}.error{color:#b91c1c;font-size:13px;margin-top:12px}@media(max-width:980px){.hero{grid-template-columns:1fr}.hero h1{font-size:48px}.grid{grid-template-columns:1fr 1fr}}@media(max-width:650px){.shell{padding:30px 16px 60px}.hero h1{font-size:39px}.fields{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.step{grid-template-columns:70px 1fr}.step .detail{grid-column:1/-1}.summary{align-items:flex-start;flex-direction:column}}
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#111827;background:#f5f6f8}*{box-sizing:border-box}body{margin:0}.shell{max-width:1180px;margin:0 auto;padding:44px 24px 80px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:#6b7280;font-weight:800}.mode{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid #d1d5db;border-radius:999px;background:#fff;font-size:12px;font-weight:700;color:#4b5563}.dot{width:7px;height:7px;border-radius:50%;background:#9ca3af}.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:34px;align-items:end;margin:24px 0 30px}.hero h1{font-size:58px;line-height:.96;letter-spacing:-.06em;margin:0;max-width:800px}.hero p{font-size:17px;line-height:1.62;color:#4b5563;margin:0;max-width:470px}.card{background:white;border:1px solid #e5e7eb;border-radius:22px;box-shadow:0 18px 50px rgba(17,24,39,.055)}.composer{padding:22px}.fields{display:grid;grid-template-columns:1.5fr .5fr;gap:14px}.field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#6b7280;font-weight:800;margin-bottom:8px}.field input{width:100%;border:1px solid #e5e7eb;border-radius:13px;padding:13px 14px;font:inherit;outline:none;background:#fafafa}.field input:focus{border-color:#9ca3af;background:#fff}.actions{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #eee;padding-top:16px;margin-top:16px;gap:12px}.hint{color:#6b7280;font-size:13px;line-height:1.35}.actions button{border:0;border-radius:14px;background:#111827;color:white;font-weight:800;padding:13px 19px;cursor:pointer}.actions button:disabled{opacity:.55;cursor:default}.summary{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:28px}.summary h2{font-size:20px;margin:0;letter-spacing:-.02em}.summary small{color:#6b7280}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:14px}.item{padding:18px;min-height:238px;display:flex;flex-direction:column}.domain{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#6b7280;font-weight:800}.item h3{font-size:18px;line-height:1.22;margin:17px 0 10px}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto;padding-top:18px}.metric{border-top:1px solid #eee;padding-top:10px}.metric strong{display:block;font-size:25px;letter-spacing:-.04em}.metric span{display:block;font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;margin-top:2px}.confidence{font-size:12px;color:#4b5563;margin-top:11px}.influence{font-size:12px;line-height:1.45;color:#6b7280;margin-top:10px}.trace{margin-top:18px;padding:22px}.trace h2{font-size:16px;margin:0 0 14px}.step{display:grid;grid-template-columns:80px 140px 1fr;gap:10px;padding:10px 0;border-top:1px solid #f0f1f3;font-size:13px;line-height:1.4}.status{font-weight:800}.warn{margin-top:15px;padding:11px 13px;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;font-size:12px;color:#9a3412}.secondary{background:#fff!important;color:#111827!important;border:1px solid #d1d5db!important}.compare{margin-top:18px;padding:22px}.comparegrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.comparecol{padding:16px;border:1px solid #e5e7eb;border-radius:16px;background:#fafafa}.comparecol h3{margin:0 0 12px;font-size:15px}.mini{padding:9px 0;border-top:1px solid #e5e7eb;font-size:12px;line-height:1.4}.graph{margin-top:16px}.graphrow{display:grid;grid-template-columns:1fr 80px 1fr;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #eef0f2;font-size:12px}.arrow{text-align:center;color:#6b7280;font-weight:800}.metricsline{margin-top:14px;font-size:12px;color:#4b5563;line-height:1.6}.hidden{display:none}.error{color:#b91c1c;font-size:13px;margin-top:12px}@media(max-width:980px){.hero{grid-template-columns:1fr}.hero h1{font-size:48px}.grid{grid-template-columns:1fr 1fr}}@media(max-width:650px){.shell{padding:30px 16px 60px}.hero h1{font-size:39px}.fields{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.comparegrid{grid-template-columns:1fr}.graphrow{grid-template-columns:1fr 65px 1fr}.step{grid-template-columns:70px 1fr}.step .detail{grid-column:1/-1}.summary{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
 <body>
@@ -25,7 +25,7 @@
     </div>
     <div class="actions">
       <span class="hint" id="runtimeHint">Preparing agent runtime…</span>
-      <button id="run">Build direction</button>
+      <div><button id="compare" class="secondary">Compare baseline</button> <button id="run">Build direction</button></div>
     </div>
     <div id="error" class="error hidden"></div>
   </section>
@@ -33,10 +33,12 @@
     <div class="summary"><h2>Cross-domain direction</h2><small id="scoreNote"></small></div>
     <div id="cards" class="grid"></div>
     <div class="card trace"><h2>Agent trace</h2><div id="steps"></div><div id="warning" class="warn hidden"></div></div>
+    <div id="comparison" class="card compare hidden"><h2>Baseline vs grounded pipeline</h2><div class="comparegrid"><div class="comparecol"><h3>Generic baseline</h3><div id="baselineItems"></div></div><div class="comparecol"><h3>Grounded pipeline</h3><div id="groundedItems"></div></div></div><div class="metricsline" id="compareMetrics"></div><div class="graph"><h3>Explainability graph</h3><div id="graphRows"></div></div><div id="compareWarning" class="warn hidden"></div></div>
   </section>
 </main>
 <script>
 const run=document.getElementById('run');
+const compare=document.getElementById('compare');
 const output=document.getElementById('output');
 const cards=document.getElementById('cards');
 const steps=document.getElementById('steps');
@@ -45,6 +47,12 @@ const errorBox=document.getElementById('error');
 const modeText=document.getElementById('modeText');
 const runtimeHint=document.getElementById('runtimeHint');
 const scoreNote=document.getElementById('scoreNote');
+const comparison=document.getElementById('comparison');
+const baselineItems=document.getElementById('baselineItems');
+const groundedItems=document.getElementById('groundedItems');
+const compareMetrics=document.getElementById('compareMetrics');
+const graphRows=document.getElementById('graphRows');
+const compareWarning=document.getElementById('compareWarning');
 let live=false;
 
 function esc(value){return String(value==null?'':value).replace(/[&<>'"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]})}
@@ -59,6 +67,28 @@ async function init(){
   try{const r=await fetch('/health');const d=await r.json();live=!!d.qloo_configured;modeText.textContent=live?'Qloo live':'Synthetic demo';runtimeHint.textContent=live?'Live Qloo data enabled · API v2':'Qloo key unavailable · using clearly labeled synthetic fixtures';}
   catch(e){modeText.textContent='Runtime unavailable';runtimeHint.textContent='Health check failed';}
 }
+
+
+compare.onclick=async function(){
+  errorBox.classList.add('hidden');compareWarning.classList.add('hidden');compare.disabled=true;compare.textContent='Comparing…';
+  try{
+    const signals=document.getElementById('signals').value.split(',').map(function(x){return x.trim()}).filter(Boolean);
+    if(!signals.length) throw new Error('Add at least one taste signal.');
+    const location=document.getElementById('location').value.trim()||null;
+    const r=await fetch('/api/agent/compare',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({signals:signals,location:location,take:3})});
+    const d=await r.json();if(!r.ok)throw new Error(d.detail||'Comparison failed');
+    baselineItems.innerHTML=d.baseline.items.map(function(x){return '<div class="mini"><strong>'+esc(x.domain)+'</strong> · '+esc(x.name)+'<br><span>'+esc(x.rationale)+'</span></div>'}).join('');
+    groundedItems.innerHTML=d.grounded.items.map(function(x){return '<div class="mini"><strong>'+esc(x.domain)+'</strong> · '+esc(x.name)+' · fit '+esc(x.cultural_fit)+'</div>'}).join('');
+    const m=d.metrics;
+    compareMetrics.textContent='Domain coverage '+m.baseline_domain_coverage+' → '+m.grounded_domain_coverage+' · unique ratio '+m.baseline_unique_ratio+' → '+m.grounded_unique_ratio+' · explicit evidence coverage '+Math.round(m.grounded_explicit_evidence_coverage*100)+'%. '+m.note;
+    const graph=d.grounded.graph||{nodes:[],edges:[]};
+    const labels={};graph.nodes.forEach(function(n){labels[n.id]=n.label});
+    graphRows.innerHTML=graph.edges.length?graph.edges.map(function(e){return '<div class="graphrow"><span>'+esc(labels[e.source])+'</span><span class="arrow">'+Math.round(e.weight*100)+'% →</span><span>'+esc(labels[e.target])+'</span></div>'}).join(''):'<div class="mini">No explicit explainability edges available yet.</div>';
+    if(d.warning){compareWarning.textContent=d.warning;compareWarning.classList.remove('hidden')}
+    comparison.classList.remove('hidden');output.classList.remove('hidden');
+  }catch(e){errorBox.textContent=e.message;errorBox.classList.remove('hidden')}
+  finally{compare.disabled=false;compare.textContent='Compare baseline'}
+};
 
 run.onclick=async function(){
   errorBox.classList.add('hidden');warning.classList.add('hidden');run.disabled=true;run.textContent='Planning…';

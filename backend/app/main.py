@@ -8,12 +8,13 @@ from pydantic import BaseModel, Field, field_validator
 
 from .config import settings
 from .services.fixtures import FixtureQlooProvider
+from .services.baseline import build_generic_baseline, comparison_metrics
 from .services.orchestrator import execute_agent, preview_agent
 from .services.planner import build_mock_plan
 from .services.qloo import QlooClient, QlooError, build_insights_payload
 
 BASE_DIR = Path(__file__).resolve().parent
-app = FastAPI(title="Affinity Director", version="0.3.0")
+app = FastAPI(title="Affinity Director", version="0.4.0")
 
 
 class PlanRequest(BaseModel):
@@ -88,6 +89,50 @@ def agent_demo(request: QlooExploreRequest) -> dict:
         take=request.take,
         mode="demo_fixture",
     )
+
+
+@app.post("/api/agent/compare-demo")
+def agent_compare_demo(request: QlooExploreRequest) -> dict:
+    baseline = build_generic_baseline(signals=request.signals, location=request.location)
+    grounded = execute_agent(
+        FixtureQlooProvider(),
+        signals=request.signals,
+        location=request.location,
+        take=request.take,
+        mode="demo_fixture",
+    )
+    return {
+        "mode": "comparison_demo",
+        "baseline": baseline,
+        "grounded": grounded,
+        "metrics": comparison_metrics(baseline, grounded),
+        "warning": "Synthetic evaluation surface only. Real Qloo data is required before making recommendation-quality claims.",
+    }
+
+
+@app.post("/api/agent/compare")
+def agent_compare(request: QlooExploreRequest) -> dict:
+    baseline = build_generic_baseline(signals=request.signals, location=request.location)
+    client = QlooClient()
+    provider = client if client.configured else FixtureQlooProvider()
+    provider_mode = "live" if client.configured else "demo_fixture"
+    try:
+        grounded = execute_agent(
+            provider,
+            signals=request.signals,
+            location=request.location,
+            take=request.take,
+            mode=provider_mode,
+        )
+    except (QlooError, ValueError) as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    return {
+        "mode": "comparison_live" if client.configured else "comparison_demo",
+        "baseline": baseline,
+        "grounded": grounded,
+        "metrics": comparison_metrics(baseline, grounded),
+        "warning": None if client.configured else "Synthetic Qloo fixture data only. Real Qloo data is required before making recommendation-quality claims.",
+    }
 
 
 @app.post("/api/qloo/explore")

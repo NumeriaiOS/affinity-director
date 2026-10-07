@@ -134,3 +134,32 @@ def test_demo_fixture_is_explicitly_non_live_and_cross_domain():
     assert "Synthetic fixture" in result["warning"]
     assert len({item["domain"] for item in result["items"]}) == 4
     assert all(item["cultural_fit"] >= 0 for item in result["items"])
+
+from app.services.baseline import build_generic_baseline, comparison_metrics
+from app.services.explainability import build_explainability_graph
+
+
+def test_explainability_graph_uses_only_explicit_signal_weights():
+    graph = build_explainability_graph(
+        ["Arctic Monkeys", "A24"],
+        [
+            {
+                "domain": "music",
+                "name": "Candidate",
+                "cultural_fit": 91,
+                "explainability": {"signal.interests.entities": {"Arctic Monkeys": 0.8, "unknown": 0.99}},
+            }
+        ],
+    )
+    assert len(graph["edges"]) == 1
+    assert graph["edges"][0]["weight"] == 0.8
+    assert graph["evidence_coverage"] == 1.0
+
+
+def test_demo_comparison_metrics_are_structural_only():
+    baseline = build_generic_baseline(signals=["A24"], location="Milan")
+    grounded = execute_agent(FakeQloo(), signals=["A24"], location="Milan", take=2, mode="demo_fixture")
+    metrics = comparison_metrics(baseline, grounded)
+    assert metrics["baseline_domain_coverage"] == 4
+    assert metrics["grounded_domain_coverage"] == 4
+    assert "structural diagnostics" in metrics["note"]
