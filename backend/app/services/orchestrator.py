@@ -8,6 +8,7 @@ from .qloo import build_insights_payload
 from .scoring import apply_scores, select_coherent
 from .explainability import build_explainability_graph
 from .composer import compose_blueprint
+from .verifier import verify_selection
 
 
 class InsightsProvider(Protocol):
@@ -93,6 +94,14 @@ def execute_agent(
 
     coherent = select_coherent(scored, per_domain=2, total=8)
     trace.append(AgentTrace("coherence", "ok", f"Selected {len(coherent)} unique, cross-domain candidates from {len(scored)} scored results."))
+    verification = verify_selection(coherent)
+    trace.append(
+        AgentTrace(
+            "verify",
+            verification["status"],
+            "All required domains are represented." if verification["safe_to_present_as_complete"] else "Missing domains: " + ", ".join(verification["missing_domains"]),
+        )
+    )
     trace.append(AgentTrace("explain", "ok", "Retained per-candidate and aggregate explainability metadata where supplied."))
 
     response = {
@@ -102,6 +111,7 @@ def execute_agent(
         "items": coherent,
         "explainability": aggregate_explanations,
         "trace": [asdict(step) for step in trace],
+        "verification": verification,
         "blueprint": compose_blueprint(coherent, location),
         "graph": build_explainability_graph(signals, coherent),
         "score_method": {

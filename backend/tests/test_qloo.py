@@ -230,3 +230,20 @@ def test_blueprint_only_uses_selected_candidates():
     assert "Music B" not in names
     assert blueprint["role_count"] == 4
     assert blueprint["mean_cultural_fit"] == 86.2
+
+from app.services.verifier import verify_selection
+
+
+def test_verifier_marks_complete_cross_domain_selection():
+    rows = [{"domain": domain, "explainability": {"x": 0.5}} for domain in ("music", "venue", "brand", "film")]
+    result = verify_selection(rows)
+    assert result["status"] == "complete"
+    assert result["safe_to_present_as_complete"] is True
+    assert result["missing_domains"] == []
+
+
+def test_verifier_marks_missing_domains_without_inventing_them():
+    result = verify_selection([{"domain": "music"}, {"domain": "brand"}])
+    assert result["status"] == "insufficient"
+    assert result["safe_to_present_as_complete"] is False
+    assert result["missing_domains"] == ["venue", "film"]
