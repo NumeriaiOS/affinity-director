@@ -212,3 +212,21 @@ def test_request_rejects_oversized_signal():
 def test_request_normalizes_duplicate_signals():
     request = QlooExploreRequest(signals=[" A24 ", "a24", " Arctic   Monkeys "], location="Milan")
     assert request.signals == ["A24", "Arctic Monkeys"]
+
+from app.services.composer import compose_blueprint
+
+
+def test_blueprint_only_uses_selected_candidates():
+    items = [
+        {"domain": "music", "name": "Music A", "cultural_fit": 90, "score_confidence": "high", "explainability": {"x": 0.8}},
+        {"domain": "music", "name": "Music B", "cultural_fit": 80, "score_confidence": "high", "explainability": {"x": 0.5}},
+        {"domain": "venue", "name": "Place A", "cultural_fit": 88, "score_confidence": "medium", "explainability": None},
+        {"domain": "brand", "name": "Brand A", "cultural_fit": 85, "score_confidence": "high", "explainability": {"x": 0.6}},
+        {"domain": "film", "name": "Film A", "cultural_fit": 82, "score_confidence": "high", "explainability": {"x": 0.7}},
+    ]
+    blueprint = compose_blueprint(items, "Milan")
+    names = {entry["name"] for entry in blueprint["sequence"]}
+    assert names == {"Music A", "Place A", "Brand A", "Film A"}
+    assert "Music B" not in names
+    assert blueprint["role_count"] == 4
+    assert blueprint["mean_cultural_fit"] == 86.2

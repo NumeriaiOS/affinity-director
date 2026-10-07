@@ -7,6 +7,7 @@ from .affinity import DEFAULT_DOMAINS, DomainQuery, normalize_entities
 from .qloo import build_insights_payload
 from .scoring import apply_scores, select_coherent
 from .explainability import build_explainability_graph
+from .composer import compose_blueprint
 
 
 class InsightsProvider(Protocol):
@@ -101,6 +102,7 @@ def execute_agent(
         "items": coherent,
         "explainability": aggregate_explanations,
         "trace": [asdict(step) for step in trace],
+        "blueprint": compose_blueprint(coherent, location),
         "graph": build_explainability_graph(signals, coherent),
         "score_method": {
             "name": "Cultural Fit Score",
