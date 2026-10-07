@@ -1,7 +1,7 @@
 PYTHON ?= .venv/bin/python
 PYTEST ?= .venv/bin/pytest
 
-.PHONY: test eval live-validate preflight check run
+.PHONY: test eval live-validate preflight preflight-strict check run
 
 test:
 	$(PYTEST) -q
@@ -14,6 +14,9 @@ live-validate:
 
 preflight:
 	$(PYTHON) tools/submission_preflight.py
+
+preflight-strict:
+	$(PYTHON) tools/submission_preflight.py --strict
 
 check: test eval
 	git diff --check

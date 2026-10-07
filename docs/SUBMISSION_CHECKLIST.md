@@ -29,3 +29,16 @@
 - [ ] Choose and add open-source license
 - [ ] Final English Devpost description
 - [ ] Judge testing instructions
+
+## Automated preflight
+
+Run `make preflight` at any time for a non-failing readiness report. Before final submission, export the actual public URLs and run the strict gate:
+
+```bash
+export PUBLIC_DEMO_URL=https://your-live-demo.example
+export PUBLIC_REPO_URL=https://github.com/owner/repository
+export QLOO_LIVE_ENABLED=true
+make preflight-strict
+```
+
+The strict gate also requires a passing `reports/live_validation.json`, a clean Git worktree and an open-source license file. Do not set `QLOO_LIVE_ENABLED=true` until the live validation gate has passed.
