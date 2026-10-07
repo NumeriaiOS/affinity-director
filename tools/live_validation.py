@@ -52,7 +52,13 @@ def inspect_domain(domain: str, response: dict, take: int) -> dict:
     per_result_explainability = sum(1 for row in normalized if row.get("explainability"))
     aggregate = (response.get("query") or {}).get("explainability")
     locality = (response.get("query") or {}).get("locality")
+    first_row = rows[0] if isinstance(rows, list) and rows and isinstance(rows[0], dict) else {}
+    query = response.get("query") if isinstance(response.get("query"), dict) else {}
     return {
+        "response_keys": sorted(response.keys()),
+        "query_keys": sorted(query.keys()),
+        "results_keys": sorted(results.keys()) if isinstance(results, dict) else [],
+        "first_entity_keys": sorted(first_row.keys()),
         "raw_entity_count": len(rows) if isinstance(rows, list) else 0,
         "normalized_count": len(normalized),
         "entity_identity_count": sum(1 for row in normalized if row.get("entity_id") and row.get("name")),
