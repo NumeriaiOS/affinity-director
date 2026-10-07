@@ -1,14 +1,18 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict
+import logging
 from typing import Protocol
 
 from .affinity import DEFAULT_DOMAINS, DomainQuery, normalize_entities
-from .qloo import build_insights_payload
+from .qloo import QlooError, build_insights_payload
 from .scoring import apply_scores, select_coherent
 from .explainability import build_explainability_graph
 from .composer import compose_blueprint
 from .verifier import verify_selection
+
+
+logger = logging.getLogger(__name__)
 
 
 class InsightsProvider(Protocol):
@@ -81,13 +85,25 @@ def execute_agent(
     ]
     items: list[dict] = []
     aggregate_explanations: dict[str, object] = {}
+    failures: list[dict[str, str]] = []
+    successful_queries = 0
 
     for task in tasks:
-        response = provider.insights(task.payload)
+        try:
+            response = provider.insights(task.payload)
+        except QlooError as exc:
+            logger.warning("Qloo domain query failed for %s: %s", task.domain, exc)
+            failures.append({"domain": task.domain, "reason": "provider_error"})
+            trace.append(AgentTrace("discover_" + task.domain, "error", "Qloo request failed for this domain; continuing with remaining domains."))
+            continue
+        successful_queries += 1
         domain_items = normalize_entities(task.domain, response, take)
         items.extend(domain_items)
         aggregate_explanations[task.domain] = (response.get("query") or {}).get("explainability")
         trace.append(AgentTrace("discover_" + task.domain, "ok", f"Received {len(domain_items)} candidates for {task.domain}."))
+
+    if successful_queries == 0:
+        raise QlooError("All Qloo domain queries failed")
 
     scored = apply_scores(items)
     trace.append(AgentTrace("rank", "ok", f"Scored {len(scored)} candidates; affinity is dominant and remains separately visible."))
@@ -112,6 +128,7 @@ def execute_agent(
         "explainability": aggregate_explanations,
         "trace": [asdict(step) for step in trace],
         "verification": verification,
+        "failures": failures,
         "blueprint": compose_blueprint(coherent, location),
         "graph": build_explainability_graph(signals, coherent),
         "score_method": {
@@ -121,4 +138,6 @@ def execute_agent(
     }
     if mode == "demo_fixture":
         response["warning"] = "Synthetic fixture data only. No Qloo API data has been used."
+    elif failures:
+        response["warning"] = "Some Qloo domain queries failed; this output is partial."
     return response

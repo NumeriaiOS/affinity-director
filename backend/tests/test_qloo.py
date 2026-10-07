@@ -247,3 +247,29 @@ def test_verifier_marks_missing_domains_without_inventing_them():
     assert result["status"] == "insufficient"
     assert result["safe_to_present_as_complete"] is False
     assert result["missing_domains"] == ["venue", "film"]
+
+
+class PartialFailQloo(FakeQloo):
+    def insights(self, payload):
+        if payload["filter.type"] == "urn:entity:place":
+            raise QlooError("temporary venue failure")
+        return super().insights(payload)
+
+
+class AllFailQloo:
+    def insights(self, payload):
+        raise QlooError("temporary failure")
+
+
+def test_agent_degrades_to_partial_when_one_domain_fails():
+    result = execute_agent(PartialFailQloo(), signals=["A24"], location="Milan", take=2, mode="live")
+    assert result["verification"]["status"] == "partial"
+    assert result["verification"]["missing_domains"] == ["venue"]
+    assert result["failures"] == [{"domain": "venue", "reason": "provider_error"}]
+    assert "partial" in result["warning"].lower()
+    assert any(step["step"] == "discover_venue" and step["status"] == "error" for step in result["trace"])
+
+
+def test_agent_fails_closed_when_every_domain_query_fails():
+    with pytest.raises(QlooError, match="All Qloo domain queries failed"):
+        execute_agent(AllFailQloo(), signals=["A24"], location="Milan", take=2, mode="live")
