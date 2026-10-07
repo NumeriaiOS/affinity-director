@@ -1,0 +1,16 @@
+services:
+  - type: web
+    runtime: docker
+    name: affinity-director-qloo
+    plan: free
+    region: frankfurt
+    branch: main
+    autoDeployTrigger: checksPass
+    healthCheckPath: /ready
+    envVars:
+      - key: QLOO_API_KEY
+        sync: false
+      - key: QLOO_BASE_URL
+        value: https://api.qloo.com
+      - key: QLOO_LIVE_ENABLED
+        value: "false"

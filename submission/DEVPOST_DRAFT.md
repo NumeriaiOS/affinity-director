@@ -44,4 +44,4 @@ Affinity Director preserves Qloo affinity separately from its own Cultural Fit S
 
 ## What is still pending
 
-This draft intentionally contains no claims based on synthetic fixtures. Before submission, replace this section with measured results from the live Qloo validation set and add the public demo/repository URLs.
+This draft intentionally contains no claims based on synthetic fixtures. The public source repository is now available at `https://github.com/NumeriaiOS/affinity-director`. Before submission, replace this section with measured results from the live Qloo validation set and add the verified public demo URL.

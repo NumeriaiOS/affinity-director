@@ -25,7 +25,7 @@
 - [ ] Freeze response parser from observed live payloads
 - [ ] Real A/B evaluation results
 - [ ] External hosting URL
-- [ ] Public repository URL
+- [x] Public repository URL
 - [x] Choose and add open-source license (MIT)
 - [ ] Final English Devpost description
 - [ ] Judge testing instructions

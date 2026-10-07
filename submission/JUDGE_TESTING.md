@@ -27,6 +27,6 @@ Evaluate whether Affinity Director uses Qloo as a meaningful cultural-intelligen
 
 Public demo URL: `PENDING`
 
-Public source repository: `PENDING`
+Public source repository: `https://github.com/NumeriaiOS/affinity-director`
 
 No paid account should be required for judge testing.
