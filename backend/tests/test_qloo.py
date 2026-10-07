@@ -199,3 +199,16 @@ def test_qloo_client_does_not_retry_bad_request(monkeypatch):
     with pytest.raises(QlooError, match="HTTP 400"):
         client.insights({"filter.type": "urn:entity:artist"})
     assert len(calls) == 1
+
+from pydantic import ValidationError
+from app.main import QlooExploreRequest
+
+
+def test_request_rejects_oversized_signal():
+    with pytest.raises(ValidationError, match="120 characters"):
+        QlooExploreRequest(signals=["x" * 121], location="Milan")
+
+
+def test_request_normalizes_duplicate_signals():
+    request = QlooExploreRequest(signals=[" A24 ", "a24", " Arctic   Monkeys "], location="Milan")
+    assert request.signals == ["A24", "Arctic Monkeys"]

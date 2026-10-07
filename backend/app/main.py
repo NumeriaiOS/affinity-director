@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field, field_validator
 
@@ -14,7 +14,22 @@ from .services.planner import build_mock_plan
 from .services.qloo import QlooClient, QlooError, build_insights_payload
 
 BASE_DIR = Path(__file__).resolve().parent
-app = FastAPI(title="Affinity Director", version="0.4.0")
+app = FastAPI(title="Affinity Director", version="0.4.1")
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; style-src 'self' 'unsafe-inline'; "
+        "script-src 'self' 'unsafe-inline'; connect-src 'self'; "
+        "frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
+    )
+    return response
 
 
 class PlanRequest(BaseModel):
@@ -24,13 +39,13 @@ class PlanRequest(BaseModel):
 class QlooPreviewRequest(BaseModel):
     signals: list[str] = Field(min_length=1, max_length=12)
     filter_type: str = "urn:entity:artist"
-    location: str | None = None
+    location: str | None = Field(default=None, max_length=120)
     take: int = Field(default=8, ge=1, le=50)
 
 
 class QlooExploreRequest(BaseModel):
     signals: list[str] = Field(min_length=1, max_length=12)
-    location: str | None = None
+    location: str | None = Field(default=None, max_length=120)
     take: int = Field(default=5, ge=1, le=20)
 
     @field_validator("signals")
@@ -40,12 +55,16 @@ class QlooExploreRequest(BaseModel):
         seen = set()
         for value in values:
             item = " ".join(value.split()).strip()
+            if len(item) > 120:
+                raise ValueError("each signal must be at most 120 characters")
             key = item.casefold()
             if item and key not in seen:
                 seen.add(key)
                 cleaned.append(item)
         if not cleaned:
             raise ValueError("at least one non-empty signal is required")
+        if sum(len(item) for item in cleaned) > 720:
+            raise ValueError("combined signal text is too long")
         return cleaned
 
 

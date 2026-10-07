@@ -128,4 +128,3 @@ class QlooClient:
             take=take,
         )
         return self.insights(payload)
-
