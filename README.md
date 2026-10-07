@@ -98,7 +98,7 @@ A generic `Dockerfile` is included. Any external hosting service capable of runn
 ```bash
 # Example shape only; Docker is not required for local development.
 docker build -t affinity-director .
-docker run --rm -p 8000:8000 -e QLOO_API_KEY='...' affinity-director
+docker run --rm -p 8000:8000 -e QLOO_API_KEY='...' -e QLOO_LIVE_ENABLED=true affinity-director
 ```
 
 ## Repository map
@@ -121,7 +121,7 @@ docker run --rm -p 8000:8000 -e QLOO_API_KEY='...' affinity-director
 
 ## License
 
-An open-source license must be selected before the repository is made public for submission. No license has been chosen yet.
+Affinity Director is released under the [MIT License](LICENSE).
 
 ## Reproducible development checks
 

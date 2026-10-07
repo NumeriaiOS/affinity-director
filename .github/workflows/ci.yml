@@ -18,5 +18,7 @@ jobs:
         run: pytest -q
       - name: Synthetic orchestration evaluation
         run: python tools/evaluate_agent.py
+      - name: Secret scan
+        run: python tools/secret_scan.py
       - name: Diff check
         run: git diff --check

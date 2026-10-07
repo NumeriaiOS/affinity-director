@@ -26,7 +26,7 @@
 - [ ] Real A/B evaluation results
 - [ ] External hosting URL
 - [ ] Public repository URL
-- [ ] Choose and add open-source license
+- [x] Choose and add open-source license (MIT)
 - [ ] Final English Devpost description
 - [ ] Judge testing instructions
 

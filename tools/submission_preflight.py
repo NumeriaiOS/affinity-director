@@ -40,6 +40,17 @@ def live_validation_passed() -> bool:
     return payload.get("mode") == "real_qloo_live_validation" and payload.get("all_pass") is True
 
 
+def secret_scan_passed() -> bool:
+    result = subprocess.run(
+        [str(ROOT / ".venv/bin/python"), str(ROOT / "tools/secret_scan.py")],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return result.returncode == 0
+
+
 def git_clean() -> bool:
     result = subprocess.run(
         ["git", "status", "--porcelain"],
@@ -62,6 +73,7 @@ def build_report() -> dict:
         "judge_testing": exists("submission/JUDGE_TESTING.md"),
         "devpost_draft": exists("submission/DEVPOST_DRAFT.md"),
         "ci_workflow": exists(".github/workflows/ci.yml"),
+        "secret_scan": secret_scan_passed(),
         "git_clean": git_clean(),
     }
     external = {
