@@ -5,19 +5,86 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Affinity Director</title>
 <style>
-:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#111827;background:#f5f6f8}*{box-sizing:border-box}body{margin:0}.shell{max-width:1120px;margin:0 auto;padding:48px 24px 80px}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:#6b7280;font-weight:700}.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:end;margin:18px 0 32px}.hero h1{font-size:56px;line-height:.98;letter-spacing:-.055em;margin:0;max-width:760px}.hero p{font-size:18px;line-height:1.6;color:#4b5563;margin:0}.card{background:white;border:1px solid #e5e7eb;border-radius:22px;box-shadow:0 18px 50px rgba(17,24,39,.06)}.composer{padding:22px}textarea{width:100%;min-height:118px;border:0;resize:vertical;font:inherit;font-size:16px;line-height:1.5;outline:none}button{border:0;border-radius:14px;background:#111827;color:white;font-weight:700;padding:13px 18px;cursor:pointer}.actions{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #eee;padding-top:14px}.hint{color:#9ca3af;font-size:13px}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:20px}.item{padding:18px;min-height:210px}.domain{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#6b7280}.item h3{font-size:18px;line-height:1.2;margin:18px 0 10px}.item p{font-size:13px;line-height:1.5;color:#6b7280}.score{font-size:30px;font-weight:800;letter-spacing:-.04em;margin-top:18px}.score span{font-size:12px;color:#9ca3af;font-weight:600}.trace{margin-top:20px;padding:22px}.trace h2{font-size:16px;margin:0 0 14px}.step{display:flex;gap:12px;padding:9px 0;border-top:1px solid #f0f1f3;font-size:13px}.status{min-width:54px;font-weight:700}.warn{margin-top:14px;font-size:12px;color:#9a3412}.hidden{display:none}@media(max-width:900px){.hero{grid-template-columns:1fr}.hero h1{font-size:44px}.grid{grid-template-columns:1fr 1fr}}@media(max-width:560px){.grid{grid-template-columns:1fr}.hero h1{font-size:38px}}
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#111827;background:#f5f6f8}*{box-sizing:border-box}body{margin:0}.shell{max-width:1180px;margin:0 auto;padding:44px 24px 80px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:#6b7280;font-weight:800}.mode{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid #d1d5db;border-radius:999px;background:#fff;font-size:12px;font-weight:700;color:#4b5563}.dot{width:7px;height:7px;border-radius:50%;background:#9ca3af}.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:34px;align-items:end;margin:24px 0 30px}.hero h1{font-size:58px;line-height:.96;letter-spacing:-.06em;margin:0;max-width:800px}.hero p{font-size:17px;line-height:1.62;color:#4b5563;margin:0;max-width:470px}.card{background:white;border:1px solid #e5e7eb;border-radius:22px;box-shadow:0 18px 50px rgba(17,24,39,.055)}.composer{padding:22px}.fields{display:grid;grid-template-columns:1.5fr .5fr;gap:14px}.field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#6b7280;font-weight:800;margin-bottom:8px}.field input{width:100%;border:1px solid #e5e7eb;border-radius:13px;padding:13px 14px;font:inherit;outline:none;background:#fafafa}.field input:focus{border-color:#9ca3af;background:#fff}.actions{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #eee;padding-top:16px;margin-top:16px;gap:12px}.hint{color:#6b7280;font-size:13px;line-height:1.35}.actions button{border:0;border-radius:14px;background:#111827;color:white;font-weight:800;padding:13px 19px;cursor:pointer}.actions button:disabled{opacity:.55;cursor:default}.summary{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:28px}.summary h2{font-size:20px;margin:0;letter-spacing:-.02em}.summary small{color:#6b7280}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:14px}.item{padding:18px;min-height:238px;display:flex;flex-direction:column}.domain{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#6b7280;font-weight:800}.item h3{font-size:18px;line-height:1.22;margin:17px 0 10px}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto;padding-top:18px}.metric{border-top:1px solid #eee;padding-top:10px}.metric strong{display:block;font-size:25px;letter-spacing:-.04em}.metric span{display:block;font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;margin-top:2px}.confidence{font-size:12px;color:#4b5563;margin-top:11px}.influence{font-size:12px;line-height:1.45;color:#6b7280;margin-top:10px}.trace{margin-top:18px;padding:22px}.trace h2{font-size:16px;margin:0 0 14px}.step{display:grid;grid-template-columns:80px 140px 1fr;gap:10px;padding:10px 0;border-top:1px solid #f0f1f3;font-size:13px;line-height:1.4}.status{font-weight:800}.warn{margin-top:15px;padding:11px 13px;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;font-size:12px;color:#9a3412}.hidden{display:none}.error{color:#b91c1c;font-size:13px;margin-top:12px}@media(max-width:980px){.hero{grid-template-columns:1fr}.hero h1{font-size:48px}.grid{grid-template-columns:1fr 1fr}}@media(max-width:650px){.shell{padding:30px 16px 60px}.hero h1{font-size:39px}.fields{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.step{grid-template-columns:70px 1fr}.step .detail{grid-column:1/-1}.summary{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
 <body>
 <main class="shell">
-<div class="eyebrow">Qloo Agentic Hackathon · prototype</div>
-<section class="hero"><h1>Design experiences around what people actually like.</h1><p>Affinity Director turns a cultural brief into a cross-domain experience plan. The live version will ground every recommendation in Qloo affinities rather than generic model intuition.</p></section>
-<section class="card composer"><textarea id="brief">Plan a Milan evening event for an audience that likes Arctic Monkeys, A24 films, technical streetwear and contemporary Asian food.</textarea><div class="actions"><span class="hint">Current build: Qloo-ready mock mode</span><button id="run">Build direction</button></div></section>
-<section id="output" class="hidden"><div id="cards" class="grid"></div><div class="card trace"><h2>Agent trace</h2><div id="steps"></div><div id="warning" class="warn"></div></div></section>
+  <div class="top">
+    <div class="eyebrow">Qloo Agentic Hackathon · Affinity Director</div>
+    <div class="mode"><span class="dot"></span><span id="modeText">Checking runtime…</span></div>
+  </div>
+  <section class="hero">
+    <h1>Design an experience around cultural affinity.</h1>
+    <p>Start with a few taste signals. The agent fans out across music, venues, brands and film, then scores and reconciles the candidates into one coherent direction.</p>
+  </section>
+  <section class="card composer">
+    <div class="fields">
+      <div class="field"><label for="signals">Taste signals</label><input id="signals" value="Arctic Monkeys, A24, technical streetwear" /></div>
+      <div class="field"><label for="location">Location</label><input id="location" value="Milan" /></div>
+    </div>
+    <div class="actions">
+      <span class="hint" id="runtimeHint">Preparing agent runtime…</span>
+      <button id="run">Build direction</button>
+    </div>
+    <div id="error" class="error hidden"></div>
+  </section>
+  <section id="output" class="hidden">
+    <div class="summary"><h2>Cross-domain direction</h2><small id="scoreNote"></small></div>
+    <div id="cards" class="grid"></div>
+    <div class="card trace"><h2>Agent trace</h2><div id="steps"></div><div id="warning" class="warn hidden"></div></div>
+  </section>
 </main>
 <script>
-const run=document.getElementById('run'), output=document.getElementById('output'), cards=document.getElementById('cards'), steps=document.getElementById('steps'), warning=document.getElementById('warning');
-run.onclick=async()=>{run.disabled=true;run.textContent='Planning…';try{const r=await fetch('/api/plan',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({brief:document.getElementById('brief').value})});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Request failed');cards.innerHTML=d.items.map(x=>'<article class="card item"><div class="domain">'+x.domain+'</div><h3>'+x.name+'</h3><p>'+x.rationale+'</p><div class="score">'+x.cultural_fit+'<span>/100 fit</span></div></article>').join('');steps.innerHTML=d.trace.map(x=>'<div class="step"><span class="status">'+x.status+'</span><span><strong>'+x.step+'</strong> — '+x.detail+'</span></div>').join('');warning.textContent=d.warning||'';output.classList.remove('hidden')}catch(e){alert(e.message)}finally{run.disabled=false;run.textContent='Build direction'}};
+const run=document.getElementById('run');
+const output=document.getElementById('output');
+const cards=document.getElementById('cards');
+const steps=document.getElementById('steps');
+const warning=document.getElementById('warning');
+const errorBox=document.getElementById('error');
+const modeText=document.getElementById('modeText');
+const runtimeHint=document.getElementById('runtimeHint');
+const scoreNote=document.getElementById('scoreNote');
+let live=false;
+
+function esc(value){return String(value==null?'':value).replace(/[&<>'"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]})}
+function topInfluences(value){
+  if(!value||typeof value!=='object') return '';
+  const pairs=[];
+  function walk(obj){Object.entries(obj).forEach(function(entry){const k=entry[0],v=entry[1];if(typeof v==='number'&&v>=0&&v<=1)pairs.push([k,v]);else if(v&&typeof v==='object')walk(v)})}
+  walk(value);pairs.sort(function(a,b){return b[1]-a[1]});return pairs.slice(0,2).map(function(p){return esc(p[0])+' '+Math.round(p[1]*100)+'%'}).join(' · ')
+}
+
+async function init(){
+  try{const r=await fetch('/health');const d=await r.json();live=!!d.qloo_configured;modeText.textContent=live?'Qloo live':'Synthetic demo';runtimeHint.textContent=live?'Live Qloo data enabled · API v2':'Qloo key unavailable · using clearly labeled synthetic fixtures';}
+  catch(e){modeText.textContent='Runtime unavailable';runtimeHint.textContent='Health check failed';}
+}
+
+run.onclick=async function(){
+  errorBox.classList.add('hidden');warning.classList.add('hidden');run.disabled=true;run.textContent='Planning…';
+  try{
+    const signals=document.getElementById('signals').value.split(',').map(function(x){return x.trim()}).filter(Boolean);
+    if(!signals.length) throw new Error('Add at least one taste signal.');
+    const location=document.getElementById('location').value.trim()||null;
+    const endpoint=live?'/api/qloo/explore':'/api/agent/demo';
+    const r=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({signals:signals,location:location,take:3})});
+    const d=await r.json();if(!r.ok)throw new Error(d.detail||'Request failed');
+    cards.innerHTML=d.items.map(function(x){
+      const affinity=x.affinity_score==null?'—':Math.round(x.affinity_score);
+      const influence=topInfluences(x.explainability);
+      return '<article class="card item"><div class="domain">'+esc(x.domain)+'</div><h3>'+esc(x.name)+'</h3>'+
+        (influence?'<div class="influence">Top influence · '+influence+'</div>':'')+
+        '<div class="metrics"><div class="metric"><strong>'+esc(x.cultural_fit)+'</strong><span>Cultural fit</span></div><div class="metric"><strong>'+esc(affinity)+'</strong><span>Affinity</span></div></div>'+
+        '<div class="confidence">Score confidence: <strong>'+esc(x.score_confidence)+'</strong></div></article>';
+    }).join('');
+    steps.innerHTML=d.trace.map(function(x){return '<div class="step"><span class="status">'+esc(x.status)+'</span><strong>'+esc(x.step)+'</strong><span class="detail">'+esc(x.detail)+'</span></div>'}).join('');
+    scoreNote.textContent=d.score_method?d.score_method.note:'';
+    if(d.warning){warning.textContent=d.warning;warning.classList.remove('hidden')}
+    output.classList.remove('hidden');
+  }catch(e){errorBox.textContent=e.message;errorBox.classList.remove('hidden')}
+  finally{run.disabled=false;run.textContent='Build direction'}
+};
+init();
 </script>
 </body>
 </html>

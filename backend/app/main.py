@@ -4,16 +4,16 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from .config import settings
-from .services.affinity import discover_cross_domain
-from .services.planner import build_mock_plan
+from .services.fixtures import FixtureQlooProvider
 from .services.orchestrator import execute_agent, preview_agent
+from .services.planner import build_mock_plan
 from .services.qloo import QlooClient, QlooError, build_insights_payload
 
 BASE_DIR = Path(__file__).resolve().parent
-app = FastAPI(title="Affinity Director", version="0.2.0")
+app = FastAPI(title="Affinity Director", version="0.3.0")
 
 
 class PlanRequest(BaseModel):
@@ -31,6 +31,21 @@ class QlooExploreRequest(BaseModel):
     signals: list[str] = Field(min_length=1, max_length=12)
     location: str | None = None
     take: int = Field(default=5, ge=1, le=20)
+
+    @field_validator("signals")
+    @classmethod
+    def clean_signals(cls, values: list[str]) -> list[str]:
+        cleaned = []
+        seen = set()
+        for value in values:
+            item = " ".join(value.split()).strip()
+            key = item.casefold()
+            if item and key not in seen:
+                seen.add(key)
+                cleaned.append(item)
+        if not cleaned:
+            raise ValueError("at least one non-empty signal is required")
+        return cleaned
 
 
 @app.get("/health")
@@ -64,13 +79,24 @@ def agent_preview(request: QlooExploreRequest) -> dict:
     return preview_agent(signals=request.signals, location=request.location, take=request.take)
 
 
+@app.post("/api/agent/demo")
+def agent_demo(request: QlooExploreRequest) -> dict:
+    return execute_agent(
+        FixtureQlooProvider(),
+        signals=request.signals,
+        location=request.location,
+        take=request.take,
+        mode="demo_fixture",
+    )
+
+
 @app.post("/api/qloo/explore")
 def qloo_explore(request: QlooExploreRequest) -> dict:
     client = QlooClient()
     if not client.configured:
-        raise HTTPException(status_code=503, detail="QLOO_API_KEY is not configured; use query-preview until registration is available")
+        raise HTTPException(status_code=503, detail="QLOO_API_KEY is not configured; use agent/demo until registration is available")
     try:
-        return execute_agent(client, signals=request.signals, location=request.location, take=request.take)
+        return execute_agent(client, signals=request.signals, location=request.location, take=request.take, mode="live")
     except (QlooError, ValueError) as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 

@@ -5,6 +5,7 @@ from typing import Protocol
 
 from .affinity import DEFAULT_DOMAINS, DomainQuery, normalize_entities
 from .qloo import build_insights_payload
+from .scoring import apply_scores, select_coherent
 
 
 class InsightsProvider(Protocol):
@@ -50,9 +51,9 @@ def preview_agent(*, signals: list[str], location: str | None, take: int = 5) ->
     trace = [
         AgentTrace("resolve_signals", "ready", f"Resolve {len(signals)} named cultural signals inside Qloo Insights."),
         AgentTrace("fan_out", "ready", f"Prepare {len(tasks)} cross-domain discovery tasks."),
-        AgentTrace("rank", "ready", "Rank candidates using Qloo affinity outputs."),
-        AgentTrace("coherence", "ready", "Remove duplicate entities and preserve domain diversity."),
-        AgentTrace("explain", "ready", "Retain Qloo explainability metadata for judge-facing rationale."),
+        AgentTrace("rank", "ready", "Rank candidates using Qloo affinity while retaining the raw value."),
+        AgentTrace("coherence", "ready", "De-duplicate globally and preserve domain diversity."),
+        AgentTrace("explain", "ready", "Use per-result Qloo explainability as an auxiliary rationale signal."),
     ]
     return {
         "mode": "preview",
@@ -63,49 +64,47 @@ def preview_agent(*, signals: list[str], location: str | None, take: int = 5) ->
     }
 
 
-def _dedupe(items: list[dict]) -> list[dict]:
-    seen: set[str] = set()
-    result = []
-    for item in items:
-        key = str(item.get("entity_id") or item.get("name") or "").strip().casefold()
-        if not key or key in seen:
-            continue
-        seen.add(key)
-        result.append(item)
-    return result
-
-
 def execute_agent(
     provider: InsightsProvider,
     *,
     signals: list[str],
     location: str | None,
     take: int = 5,
+    mode: str = "live",
 ) -> dict:
     tasks = build_tasks(signals=signals, location=location, take=take)
     trace: list[AgentTrace] = [
-        AgentTrace("resolve_signals", "running", "Qloo will resolve named entities from the request payload."),
+        AgentTrace("resolve_signals", "running", "The provider resolves named taste signals from the request payload."),
     ]
     items: list[dict] = []
-    explanations: dict[str, object] = {}
+    aggregate_explanations: dict[str, object] = {}
 
     for task in tasks:
         response = provider.insights(task.payload)
         domain_items = normalize_entities(task.domain, response, take)
         items.extend(domain_items)
-        explanations[task.domain] = (response.get("query") or {}).get("explainability")
+        aggregate_explanations[task.domain] = (response.get("query") or {}).get("explainability")
         trace.append(AgentTrace("discover_" + task.domain, "ok", f"Received {len(domain_items)} candidates for {task.domain}."))
 
-    before = len(items)
-    items = _dedupe(items)
-    trace.append(AgentTrace("coherence", "ok", f"Kept {len(items)} unique candidates from {before} cross-domain results."))
-    trace.append(AgentTrace("explain", "ok", "Preserved Qloo explainability metadata by domain."))
+    scored = apply_scores(items)
+    trace.append(AgentTrace("rank", "ok", f"Scored {len(scored)} candidates; affinity is dominant and remains separately visible."))
 
-    return {
-        "mode": "live",
+    coherent = select_coherent(scored, per_domain=2, total=8)
+    trace.append(AgentTrace("coherence", "ok", f"Selected {len(coherent)} unique, cross-domain candidates from {len(scored)} scored results."))
+    trace.append(AgentTrace("explain", "ok", "Retained per-candidate and aggregate explainability metadata where supplied."))
+
+    response = {
+        "mode": mode,
         "signals": signals,
         "location": location,
-        "items": items,
-        "explainability": explanations,
+        "items": coherent,
+        "explainability": aggregate_explanations,
         "trace": [asdict(step) for step in trace],
+        "score_method": {
+            "name": "Cultural Fit Score",
+            "note": "Product-level ranking metric. It is not the Qloo affinity score; raw/normalized affinity remains exposed separately.",
+        },
     }
+    if mode == "demo_fixture":
+        response["warning"] = "Synthetic fixture data only. No Qloo API data has been used."
+    return response

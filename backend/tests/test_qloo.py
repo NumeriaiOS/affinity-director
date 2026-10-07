@@ -1,7 +1,10 @@
 import pytest
 
-from app.services.qloo import QlooClient, QlooError, build_insights_payload
 from app.services.affinity import normalize_entities
+from app.services.fixtures import FixtureQlooProvider
+from app.services.orchestrator import build_tasks, execute_agent, preview_agent
+from app.services.qloo import QlooClient, QlooError, build_insights_payload
+from app.services.scoring import normalize_affinity, score_candidate, select_coherent
 
 
 def test_build_insights_payload_resolves_named_entities():
@@ -23,11 +26,17 @@ def test_client_refuses_live_call_without_key():
         client.insights({"filter.type": "urn:entity:artist"})
 
 
-def test_normalize_entities_tolerates_response_variants():
+def test_normalize_entities_preserves_raw_affinity_and_explainability():
     response = {
         "results": {
             "entities": [
-                {"name": "Example", "entity_id": "abc", "type": "urn:entity:artist", "affinity": 0.91}
+                {
+                    "name": "Example",
+                    "entity_id": "abc",
+                    "type": "urn:entity:artist",
+                    "affinity": 0.91,
+                    "query": {"explainability": {"input-a": 0.8}},
+                }
             ]
         }
     }
@@ -38,10 +47,9 @@ def test_normalize_entities_tolerates_response_variants():
         "entity_id": "abc",
         "type": "urn:entity:artist",
         "subtype": None,
-        "affinity": 0.91,
+        "affinity_raw": 0.91,
+        "explainability": {"input-a": 0.8},
     }]
-
-from app.services.orchestrator import build_tasks, execute_agent, preview_agent
 
 
 class FakeQloo:
@@ -54,7 +62,13 @@ class FakeQloo:
         return {
             "results": {
                 "entities": [
-                    {"name": kind.title() + " Candidate", "entity_id": "id-" + kind, "type": payload["filter.type"], "affinity": 0.8}
+                    {
+                        "name": kind.title() + " Candidate",
+                        "entity_id": "id-" + kind,
+                        "type": payload["filter.type"],
+                        "affinity": 0.8,
+                        "query": {"explainability": {"seed": 0.7}},
+                    }
                 ]
             },
             "query": {"explainability": {"source": "fixture"}},
@@ -69,10 +83,54 @@ def test_agent_preview_builds_cross_domain_tasks():
     assert venue["payload"]["filter.location.query"] == "Milan"
 
 
-def test_agent_executes_all_tasks_and_preserves_explainability():
+def test_agent_executes_all_tasks_scores_and_preserves_explainability():
     provider = FakeQloo()
     result = execute_agent(provider, signals=["Arctic Monkeys", "A24"], location="Milan", take=3)
     assert result["mode"] == "live"
     assert len(provider.calls) == 4
     assert len(result["items"]) == 4
     assert set(result["explainability"]) == {"music", "venue", "brand", "film"}
+    assert all(item["affinity_raw"] == 0.8 for item in result["items"])
+    assert all(item["affinity_score"] == 80.0 for item in result["items"])
+    assert all(0 <= item["cultural_fit"] <= 100 for item in result["items"])
+    assert all(item["score_confidence"] == "high" for item in result["items"])
+
+
+def test_affinity_normalizer_supports_fractional_and_percent_scales():
+    assert normalize_affinity(0.91) == 91.0
+    assert normalize_affinity(91) == 91.0
+    assert normalize_affinity(-1) is None
+    assert normalize_affinity(101) is None
+
+
+def test_missing_affinity_is_low_confidence_not_invented():
+    result = score_candidate({"affinity_raw": None, "explainability": None}, rank=1)
+    assert result.affinity_score is None
+    assert result.confidence == "low"
+    assert result.cultural_fit == 72
+
+
+def test_coherence_dedupes_and_preserves_domains():
+    items = [
+        {"domain": "music", "name": "Shared", "entity_id": "same", "cultural_fit": 95},
+        {"domain": "brand", "name": "Shared", "entity_id": "same", "cultural_fit": 80},
+        {"domain": "brand", "name": "Brand B", "entity_id": "b", "cultural_fit": 88},
+        {"domain": "film", "name": "Film C", "entity_id": "c", "cultural_fit": 84},
+    ]
+    selected = select_coherent(items, per_domain=1, total=3)
+    assert len({item["entity_id"] for item in selected}) == len(selected)
+    assert {item["domain"] for item in selected} == {"music", "brand", "film"}
+
+
+def test_demo_fixture_is_explicitly_non_live_and_cross_domain():
+    result = execute_agent(
+        FixtureQlooProvider(),
+        signals=["Arctic Monkeys", "A24", "technical streetwear"],
+        location="Milan",
+        take=3,
+        mode="demo_fixture",
+    )
+    assert result["mode"] == "demo_fixture"
+    assert "Synthetic fixture" in result["warning"]
+    assert len({item["domain"] for item in result["items"]}) == 4
+    assert all(item["cultural_fit"] >= 0 for item in result["items"])

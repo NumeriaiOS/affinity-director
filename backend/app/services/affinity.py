@@ -28,12 +28,12 @@ def _entity_rows(response: dict) -> list[dict]:
 def _score(row: dict) -> float | None:
     for key in ("affinity", "affinity_score", "score"):
         value = row.get(key)
-        if isinstance(value, (int, float)):
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
             return float(value)
     properties = row.get("properties") or {}
     for key in ("affinity", "affinity_score", "score"):
         value = properties.get(key)
-        if isinstance(value, (int, float)):
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
             return float(value)
     return None
 
@@ -48,7 +48,8 @@ def normalize_entities(domain: str, response: dict, limit: int = 5) -> list[dict
                 "entity_id": row.get("entity_id") or row.get("id"),
                 "type": row.get("type"),
                 "subtype": row.get("subtype"),
-                "affinity": _score(row),
+                "affinity_raw": _score(row),
+                "explainability": (row.get("query") or {}).get("explainability"),
             }
         )
     return normalized
