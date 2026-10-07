@@ -1,0 +1,40 @@
+{
+  "mode": "synthetic_fixture_evaluation",
+  "note": "This report validates orchestration invariants only; it does not measure real Qloo recommendation quality.",
+  "scenarios": [
+    {
+      "name": "milan-night",
+      "item_count": 8,
+      "domain_coverage": 4,
+      "unique_ratio": 1.0,
+      "scored_ratio": 1.0,
+      "high_confidence_ratio": 1.0,
+      "mean_cultural_fit": 86.62,
+      "deterministic": true,
+      "pass": true
+    },
+    {
+      "name": "cross-domain",
+      "item_count": 8,
+      "domain_coverage": 4,
+      "unique_ratio": 1.0,
+      "scored_ratio": 1.0,
+      "high_confidence_ratio": 1.0,
+      "mean_cultural_fit": 86.62,
+      "deterministic": true,
+      "pass": true
+    },
+    {
+      "name": "no-location",
+      "item_count": 8,
+      "domain_coverage": 4,
+      "unique_ratio": 1.0,
+      "scored_ratio": 1.0,
+      "high_confidence_ratio": 1.0,
+      "mean_cultural_fit": 86.62,
+      "deterministic": true,
+      "pass": true
+    }
+  ],
+  "all_pass": true
+}
