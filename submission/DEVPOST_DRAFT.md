@@ -42,6 +42,11 @@ Affinity Director preserves Qloo affinity separately from its own Cultural Fit S
 - single-page judge-facing web UI
 - container-ready deployment
 
+## Public links
+
+- Demo: `https://affinity-director-qloo.onrender.com`
+- Source: `https://github.com/NumeriaiOS/affinity-director`
+
 ## What is still pending
 
-This draft intentionally contains no claims based on synthetic fixtures. The public source repository is now available at `https://github.com/NumeriaiOS/affinity-director`. Before submission, replace this section with measured results from the live Qloo validation set and add the verified public demo URL.
+This draft intentionally contains no recommendation-quality claims based on synthetic fixtures. Before submission, replace this section with measured results from the real Qloo live-validation set.

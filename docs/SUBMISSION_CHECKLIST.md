@@ -24,11 +24,11 @@
 - [ ] Real Qloo API key and live validation
 - [ ] Freeze response parser from observed live payloads
 - [ ] Real A/B evaluation results
-- [ ] External hosting URL
-- [x] Public repository URL
+- [x] External hosting URL — https://affinity-director-qloo.onrender.com
+- [x] Public repository URL — https://github.com/NumeriaiOS/affinity-director
 - [x] Choose and add open-source license (MIT)
 - [ ] Final English Devpost description
-- [ ] Judge testing instructions
+- [x] Judge testing instructions
 
 ## Automated preflight
 

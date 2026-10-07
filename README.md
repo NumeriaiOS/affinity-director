@@ -6,6 +6,10 @@ The core product thesis is simple: a planning agent should not guess cultural fi
 
 ## Current status
 
+Public demo: https://affinity-director-qloo.onrender.com
+
+Public source: https://github.com/NumeriaiOS/affinity-director
+
 The application is fully runnable without Qloo credentials in a clearly labeled synthetic-fixture mode. No synthetic result is presented as Qloo data. A live-validation gate is included and refuses to run until `QLOO_API_KEY` is present.
 
 Current local capabilities:

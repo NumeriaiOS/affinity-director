@@ -1,6 +1,6 @@
 # Deployment notes
 
-The hackathon requires a fully published external demo. The repository therefore includes a generic container definition rather than binding the project to one hosting vendor before credentials are available.
+The public demo is deployed on Render at `https://affinity-director-qloo.onrender.com` from the public GitHub repository `https://github.com/NumeriaiOS/affinity-director`. The repository also retains a generic Docker definition so the service remains portable.
 
 Runtime requirements:
 

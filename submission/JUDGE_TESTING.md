@@ -25,7 +25,7 @@ Evaluate whether Affinity Director uses Qloo as a meaningful cultural-intelligen
 
 ## Access
 
-Public demo URL: `PENDING`
+Public demo URL: `https://affinity-director-qloo.onrender.com`
 
 Public source repository: `https://github.com/NumeriaiOS/affinity-director`
 
