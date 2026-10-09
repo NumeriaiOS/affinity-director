@@ -61,11 +61,9 @@ const compareWarning=document.getElementById('compareWarning');
 let live=false;
 
 function esc(value){return String(value==null?'':value).replace(/[&<>'"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]})}
-function topInfluences(value){
-  if(!value||typeof value!=='object') return '';
-  const pairs=[];
-  function walk(obj){Object.entries(obj).forEach(function(entry){const k=entry[0],v=entry[1];if(typeof v==='number'&&v>=0&&v<=1)pairs.push([k,v]);else if(v&&typeof v==='object')walk(v)})}
-  walk(value);pairs.sort(function(a,b){return b[1]-a[1]});return pairs.slice(0,2).map(function(p){return esc(p[0])+' '+Math.round(p[1]*100)+'%'}).join(' · ')
+function topInfluences(item){
+  const rows=Array.isArray(item&&item.signal_influences)?item.signal_influences:[];
+  return rows.slice(0,2).map(function(row){return esc(row.signal)+' '+Math.round(Number(row.weight||0)*100)+'%'}).join(' · ')
 }
 
 async function init(){
@@ -106,7 +104,7 @@ run.onclick=async function(){
     const d=await r.json();if(!r.ok)throw new Error(d.detail||'Request failed');
     cards.innerHTML=d.items.map(function(x){
       const affinity=x.affinity_score==null?'—':Math.round(x.affinity_score);
-      const influence=topInfluences(x.explainability);
+      const influence=topInfluences(x);
       return '<article class="card item"><div class="domain">'+esc(x.domain)+'</div><h3>'+esc(x.name)+'</h3>'+
         (influence?'<div class="influence">Top influence · '+influence+'</div>':'')+
         '<div class="metrics"><div class="metric"><strong>'+esc(x.cultural_fit)+'</strong><span>Cultural fit</span></div><div class="metric"><strong>'+esc(affinity)+'</strong><span>Affinity</span></div></div>'+

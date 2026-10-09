@@ -6,7 +6,7 @@ REQUIRED_DOMAINS = ("music", "venue", "brand", "film")
 def verify_selection(items: list[dict], required_domains: tuple[str, ...] = REQUIRED_DOMAINS) -> dict:
     present = sorted({str(item.get("domain")) for item in items if item.get("domain")})
     missing = [domain for domain in required_domains if domain not in present]
-    evidence_items = sum(1 for item in items if item.get("explainability"))
+    evidence_items = sum(1 for item in items if item.get("signal_influences"))
     evidence_coverage = round(evidence_items / len(items), 4) if items else 0.0
 
     if not missing:

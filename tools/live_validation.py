@@ -71,10 +71,12 @@ def inspect_domain(domain: str, response: dict, take: int) -> dict:
 
 
 def validate_scenario(client: QlooClient, scenario: dict, sample_dir: Path) -> dict:
+    resolved_signals = client.resolve_signals(scenario["signals"])
     tasks = build_tasks(
         signals=scenario["signals"],
         location=scenario["location"],
         take=3,
+        resolved_signals=resolved_signals,
     )
     captured: dict[str, dict] = {}
     domain_reports: dict[str, dict] = {}
@@ -92,6 +94,7 @@ def validate_scenario(client: QlooClient, scenario: dict, sample_dir: Path) -> d
         location=scenario["location"],
         take=3,
         mode="live_validation_replay",
+        resolved_signals=resolved_signals,
     )
     graph = replay.get("graph") or {}
     verification = replay.get("verification") or {}
@@ -101,10 +104,12 @@ def validate_scenario(client: QlooClient, scenario: dict, sample_dir: Path) -> d
         "verification": verification,
         "item_count": len(replay.get("items", [])),
         "evidence_coverage": graph.get("evidence_coverage", 0.0),
+        "signal_resolution": replay.get("signal_resolution"),
         "blueprint_roles": (replay.get("blueprint") or {}).get("role_count", 0),
         "failures": replay.get("failures", []),
         "pass": all(report["pass"] for report in domain_reports.values())
         and verification.get("status") == "complete"
+        and graph.get("evidence_coverage", 0.0) > 0
         and not replay.get("failures"),
     }
 

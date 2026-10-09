@@ -36,7 +36,7 @@ def compose_blueprint(items: list[dict], location: str | None) -> dict:
         )
 
     fits = [int(entry["cultural_fit"]) for entry in sequence if isinstance(entry.get("cultural_fit"), int)]
-    evidence_count = sum(1 for item in best_by_domain.values() if item.get("explainability"))
+    evidence_count = sum(1 for item in best_by_domain.values() if item.get("signal_influences"))
     return {
         "title": (location.strip() + " experience blueprint") if location and location.strip() else "Cross-domain experience blueprint",
         "location": location,

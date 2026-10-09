@@ -46,8 +46,12 @@ def comparison_metrics(baseline: dict, grounded: dict) -> dict:
         return round(len(set(names)) / len(names), 4) if names else 0.0
 
     grounded_items = grounded.get("items", [])
-    explicit_evidence = sum(1 for item in grounded_items if item.get("explainability"))
-    evidence_coverage = round(explicit_evidence / len(grounded_items), 4) if grounded_items else 0.0
+    graph_coverage = (grounded.get("graph") or {}).get("evidence_coverage")
+    if isinstance(graph_coverage, (int, float)) and not isinstance(graph_coverage, bool):
+        evidence_coverage = round(float(graph_coverage), 4)
+    else:
+        explicit_evidence = sum(1 for item in grounded_items if item.get("signal_influences"))
+        evidence_coverage = round(explicit_evidence / len(grounded_items), 4) if grounded_items else 0.0
 
     return {
         "baseline_domain_coverage": domains(baseline),

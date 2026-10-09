@@ -295,3 +295,54 @@ def test_env_bool_is_explicit(monkeypatch):
     assert env_bool("EXAMPLE_BOOL") is True
     monkeypatch.setenv("EXAMPLE_BOOL", "random")
     assert env_bool("EXAMPLE_BOOL") is False
+
+
+
+def test_build_insights_payload_combines_resolved_ids_and_unresolved_names():
+    payload = build_insights_payload(signal_names=["unresolved phrase"], signal_entity_ids=["entity-a24"], filter_type="urn:entity:movie", take=3)
+    assert payload["signal.interests.entities"] == ["entity-a24"]
+    assert payload["signal.interests.entities.query"] == ["unresolved phrase"]
+
+
+def test_explainability_graph_maps_qloo_entity_ids_only_with_explicit_resolution():
+    resolution = [{"input":"A24","entity_id":"entity-a24","resolved_name":"A24","types":["urn:entity:brand"],"match":"exact"}]
+    item = {"domain":"film","name":"Candidate","cultural_fit":90,"explainability":{"signal.interests.entities":[{"entity_id":"entity-a24","score":0.82},{"entity_id":"unmapped","score":0.99}]}}
+    graph = build_explainability_graph(["A24"], [item], resolution)
+    assert graph["evidence_coverage"] == 1.0
+    assert graph["resolved_signal_count"] == 1
+    assert len(graph["edges"]) == 1
+    assert graph["edges"][0]["weight"] == 0.82
+
+
+def test_qloo_client_resolves_signal_with_search_and_exact_name(monkeypatch):
+    calls=[]
+    def fake_urlopen(request, timeout):
+        calls.append(request.full_url)
+        return io.BytesIO(b'{"results":[{"entity_id":"entity-a24","name":"A24","types":["urn:entity:brand"]}]}')
+    monkeypatch.setattr(qloo_module, "urlopen", fake_urlopen)
+    QlooClient._resolution_cache.clear()
+    client=QlooClient(api_key="test", base_url="https://hackathon.api.qloo.com")
+    rows=client.resolve_signals(["A24"])
+    assert rows == [{"input":"A24","entity_id":"entity-a24","resolved_name":"A24","types":["urn:entity:brand"],"match":"exact"}]
+    assert len(calls)==1 and calls[0].startswith("https://hackathon.api.qloo.com/search?")
+
+
+class ResolvingFakeQloo(FakeQloo):
+    def resolve_signals(self, signals):
+        return [{"input":signal,"entity_id":"resolved-"+signal.casefold().replace(" ","-"),"resolved_name":signal,"types":["urn:entity:brand"],"match":"exact"} for signal in signals]
+    def insights(self, payload):
+        self.calls.append(payload)
+        kind=payload["filter.type"].split(":")[-1]
+        first_id=payload["signal.interests.entities"][0]
+        return {"results":{"entities":[{"name":kind.title()+" Candidate","entity_id":"id-"+kind,"type":payload["filter.type"],"affinity":0.8,"query":{"explainability":{"signal.interests.entities":[{"entity_id":first_id,"score":0.75}]}}}]},"query":{"explainability":{}}}
+
+
+def test_agent_uses_resolved_ids_and_exposes_named_influences():
+    provider=ResolvingFakeQloo()
+    result=execute_agent(provider, signals=["A24"], location="Milan", take=2, mode="live")
+    assert len(provider.calls)==4
+    assert all(call["signal.interests.entities"] == ["resolved-a24"] for call in provider.calls)
+    assert all("signal.interests.entities.query" not in call for call in provider.calls)
+    assert result["signal_resolution"]["method"] == "qloo_search"
+    assert result["graph"]["evidence_coverage"] == 1.0
+    assert all(item["signal_influences"] == [{"signal":"A24","weight":0.75}] for item in result["items"])
