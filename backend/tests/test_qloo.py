@@ -314,6 +314,17 @@ def test_explainability_graph_maps_qloo_entity_ids_only_with_explicit_resolution
     assert graph["edges"][0]["weight"] == 0.82
 
 
+
+
+def test_qloo_client_does_not_bind_non_exact_ranked_search_hit(monkeypatch):
+    def fake_urlopen(request, timeout):
+        return io.BytesIO(b'{"results":[{"entity_id":"wrong-hit","name":"National Technical Museum","types":["urn:entity:place"]}]}')
+    monkeypatch.setattr(qloo_module, "urlopen", fake_urlopen)
+    QlooClient._resolution_cache.clear()
+    client=QlooClient(api_key="test", base_url="https://hackathon.api.qloo.com")
+    assert client.resolve_signals(["technical streetwear"]) == []
+
+
 def test_qloo_client_resolves_signal_with_search_and_exact_name(monkeypatch):
     calls=[]
     def fake_urlopen(request, timeout):

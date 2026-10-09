@@ -146,8 +146,12 @@ class QlooClient:
                     rows = []
                 usable = [row for row in rows if row.get("entity_id") or row.get("id")]
                 exact = next((row for row in usable if self._normalized_name(row.get("name")) == key), None)
-                selected = exact or (usable[0] if usable else None)
-                match = "exact" if exact is not None else "ranked"
+                # Only bind a user's phrase to a provider entity when identity is
+                # unambiguous. A top-ranked fuzzy search hit can be semantically
+                # unrelated (for example a venue matching one token), so non-exact
+                # phrases stay on Qloo's native named-query path instead.
+                selected = exact
+                match = "exact"
                 if len(self._resolution_cache) >= self._resolution_cache_max:
                     oldest = min(self._resolution_cache, key=lambda k: self._resolution_cache[k][0])
                     self._resolution_cache.pop(oldest, None)
