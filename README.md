@@ -10,7 +10,7 @@ Public demo: https://affinity-director-qloo.onrender.com
 
 Public source: https://github.com/NumeriaiOS/affinity-director
 
-The application is fully runnable without Qloo credentials in a clearly labeled synthetic-fixture mode. No synthetic result is presented as Qloo data. A live-validation gate is included and refuses to run until `QLOO_API_KEY` is present.
+The public Render deployment is running in verified live Qloo mode. A clearly labeled synthetic-fixture path remains available for offline development and tests; synthetic results are never presented as Qloo data. Live mode is gated by both `QLOO_API_KEY` and `QLOO_LIVE_ENABLED`.
 
 Current local capabilities:
 
@@ -19,9 +19,16 @@ Current local capabilities:
 - explicit preservation of raw affinity separately from the product-level Cultural Fit Score;
 - deterministic coherence/deduplication;
 - explainability graph generation from explicit per-result contribution metadata only;
+- conservative Qloo signal resolution: exact name matches use explicit entity IDs, while non-exact phrases stay on Qloo's native named-query path;
 - generic baseline vs grounded-pipeline comparison surface;
 - deterministic synthetic evaluation harness;
 - container deployment definition and submission preflight.
+
+### Verified live state
+
+On 2026-10-09 the public deployment passed real-Qloo canaries on music, venue, brand and film. Both validation scenarios returned complete four-domain selections with zero provider failures. The explainability graph reached `1.0` candidate evidence coverage using only contributions that could be tied to explicitly resolved signal IDs; ambiguous phrases were left on Qloo's named-query path rather than force-mapped to a fuzzy search result. The baseline comparison's evidence metric matched the graph coverage. See `reports/live_validation.json`.
+
+This is an integration/orchestration validation, not a human-preference benchmark and not a claim that the product outperforms a generic model on recommendation quality.
 
 ## Architecture
 
@@ -77,7 +84,7 @@ export QLOO_API_KEY='...'
 PYTHONPATH=backend .venv/bin/python tools/live_validation.py
 ```
 
-Only after the live-validation report passes should recommendation-quality claims be made. See `docs/LIVE_VALIDATION.md`.
+The public deployment has passed the live-validation gate. For a new environment or after parser changes, rerun the gate before enabling live mode. See `docs/LIVE_VALIDATION.md`.
 
 ## Evaluation
 

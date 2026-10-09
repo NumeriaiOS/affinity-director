@@ -18,7 +18,7 @@ If affinity is missing, the system does not fabricate one: Cultural Fit becomes 
 
 ## Demo / live split
 
-`demo_fixture` uses deterministic synthetic entities and is visibly labeled as synthetic. It exists so UI, orchestration and scoring can be built before the API key is available.
+`demo_fixture` uses deterministic synthetic entities and is visibly labeled as synthetic. It remains an offline/test fallback and is never presented as live Qloo data.
 
 `live` uses the Qloo v2 `/insights` provider. No fallback silently converts a failed live request into fixture data.
 
@@ -26,7 +26,7 @@ If affinity is missing, the system does not fabricate one: Cultural Fit becomes 
 
 The product must materially degrade when Qloo is removed. Qloo is therefore the grounding and ranking layer, not a decorative post-processing call.
 
-## Evaluation plan after credentials
+## Remaining evaluation plan
 
 For matched briefs compare:
 1. generic baseline

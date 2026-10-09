@@ -1,0 +1,87 @@
+{
+  "mode": "real_qloo_live_validation",
+  "validated_at_utc": "2026-10-09T05:45:00Z",
+  "validation_surface": "public_deployed_app",
+  "public_url": "https://affinity-director-qloo.onrender.com",
+  "qloo_base_url": "https://hackathon.api.qloo.com",
+  "health": {
+    "status_code": 200,
+    "qloo_configured": true,
+    "qloo_live_enabled": true,
+    "qloo_live_ready": true
+  },
+  "ready": {
+    "status_code": 200,
+    "mode": "live",
+    "live_validation_required": false
+  },
+  "scenarios": [
+    {
+      "name": "milan-cultural-night",
+      "signals": [
+        "Arctic Monkeys",
+        "A24",
+        "technical streetwear"
+      ],
+      "location": "Milan",
+      "domains": [
+        "brand",
+        "film",
+        "music",
+        "venue"
+      ],
+      "item_count": 8,
+      "verification_status": "complete",
+      "provider_failures": 0,
+      "exact_resolved_signals": [
+        "A24",
+        "Arctic Monkeys"
+      ],
+      "native_named_query_signals": [
+        "technical streetwear"
+      ],
+      "evidence_edge_count": 16,
+      "evidence_coverage": 1.0,
+      "pass": true
+    },
+    {
+      "name": "cross-domain-minimal",
+      "signals": [
+        "A24",
+        "Japanese contemporary design"
+      ],
+      "location": null,
+      "domains": [
+        "brand",
+        "film",
+        "music",
+        "venue"
+      ],
+      "item_count": 8,
+      "verification_status": "complete",
+      "provider_failures": 0,
+      "exact_resolved_signals": [
+        "A24"
+      ],
+      "native_named_query_signals": [
+        "Japanese contemporary design"
+      ],
+      "evidence_edge_count": 8,
+      "evidence_coverage": 1.0,
+      "pass": true
+    }
+  ],
+  "comparison": {
+    "mode": "comparison_live",
+    "grounded_mode": "live",
+    "verification_status": "complete",
+    "provider_failures": 0,
+    "warning": null,
+    "graph_evidence_coverage": 1.0,
+    "metric_evidence_coverage": 1.0,
+    "pass": true
+  },
+  "raw_samples_stored": false,
+  "claim_scope": "Validates live Qloo connectivity, schema normalization, cross-domain orchestration, conservative signal resolution, explicit explainability mapping, verifier completeness and comparison-metric coherence. Does not establish human preference or recommendation superiority.",
+  "all_pass": true
+}

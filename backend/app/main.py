@@ -176,7 +176,7 @@ def agent_compare(request: QlooExploreRequest) -> dict:
 def qloo_explore(request: QlooExploreRequest) -> dict:
     client = QlooClient()
     if not settings.qloo_configured:
-        raise HTTPException(status_code=503, detail="QLOO_API_KEY is not configured; use agent/demo until registration is available")
+        raise HTTPException(status_code=503, detail="QLOO_API_KEY is not configured; use agent/demo or configure the Qloo hackathon key in the runtime environment")
     if not settings.qloo_live_enabled:
         raise HTTPException(status_code=503, detail="Qloo live mode is gated; run live validation, then set QLOO_LIVE_ENABLED=true")
     try:

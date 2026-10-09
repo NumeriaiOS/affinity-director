@@ -38,7 +38,7 @@ Affinity Director preserves Qloo affinity separately from its own Cultural Fit S
 - deterministic orchestration and scoring
 - bounded request validation
 - synthetic fixture mode for development only
-- live-validation gate before real-quality claims
+- live-validation gate, with live mode enabled only after real-Qloo validation
 - single-page judge-facing web UI
 - container-ready deployment
 
@@ -47,6 +47,8 @@ Affinity Director preserves Qloo affinity separately from its own Cultural Fit S
 - Demo: `https://affinity-director-qloo.onrender.com`
 - Source: `https://github.com/NumeriaiOS/affinity-director`
 
-## What is still pending
+## Live validation results
 
-This draft intentionally contains no recommendation-quality claims based on synthetic fixtures. Before submission, replace this section with measured results from the real Qloo live-validation set.
+The deployed app passed real-Qloo live canaries across artist, place, brand and movie discovery. Both test briefs produced complete four-domain selections with zero provider failures. Explainability coverage reached 100% of selected candidates for evidence that could be tied to explicitly resolved input entity IDs; ambiguous free-form phrases were deliberately left on Qloo's named-query path instead of force-mapping them to a fuzzy search result.
+
+These results validate the integration and orchestration path. They are not presented as a human-preference benchmark or as evidence that Affinity Director is superior to a generic LLM on recommendation quality.

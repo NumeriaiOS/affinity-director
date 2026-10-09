@@ -26,7 +26,7 @@ _FIXTURE_DATA = {
 
 
 class FixtureQlooProvider:
-    """Deterministic synthetic provider used only while Qloo registration is unavailable."""
+    """Deterministic synthetic provider for offline development, tests and clearly labeled demo fallback."""
 
     def insights(self, payload: dict) -> dict:
         filter_type = str(payload.get("filter.type") or "")

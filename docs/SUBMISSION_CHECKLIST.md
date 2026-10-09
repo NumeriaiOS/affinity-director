@@ -21,18 +21,18 @@
 - [x] Synthetic fixtures clearly labeled
 - [x] Deterministic evaluation harness
 - [x] Container deployment definition
-- [ ] Real Qloo API key and live validation
-- [ ] Freeze response parser from observed live payloads
+- [x] Real Qloo API key and live validation
+- [x] Freeze response parser from observed live payloads
 - [ ] Real A/B evaluation results
 - [x] External hosting URL — https://affinity-director-qloo.onrender.com
 - [x] Public repository URL — https://github.com/NumeriaiOS/affinity-director
 - [x] Choose and add open-source license (MIT)
-- [ ] Final English Devpost description
+- [x] Final English Devpost description
 - [x] Judge testing instructions
 
 ## Automated preflight
 
-Run `make preflight` at any time for a non-failing readiness report. Before final submission, export the actual public URLs and run the strict gate:
+Run `make preflight` at any time for a non-failing readiness report. To reproduce submission readiness, export the actual public URLs and run the strict gate:
 
 ```bash
 export PUBLIC_DEMO_URL=https://your-live-demo.example

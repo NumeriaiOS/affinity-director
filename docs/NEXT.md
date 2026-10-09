@@ -1,8 +1,7 @@
 # Next actions
 
-1. Obtain the Qloo hackathon API key when registration returns.
-2. Run authenticated smoke tests and capture the real response shapes for artist, place, brand and movie queries.
-3. Calibrate Cultural Fit only after observing real affinity distributions; do not tune against synthetic fixtures.
-4. Add an A/B view: generic baseline vs Qloo-grounded result.
-5. Add a compact explainability graph showing which taste signals drove each selected entity.
-6. Prepare a public deployment path and submission documentation once live behavior is validated.
+1. Keep the verified live deployment stable and rerun the live gate after any Qloo parser or signal-resolution change.
+2. Collect a larger real-Qloo evaluation set before calibrating Cultural Fit against observed affinity distributions.
+3. Add human/judge preference evaluation if making recommendation-quality comparison claims; the current baseline comparison is structural only.
+4. Monitor latency, Qloo errors/rate limits and Render health during judging without weakening validation gates.
+5. Keep ambiguous free-form phrases on Qloo's native named-query path unless a future resolver can establish entity identity conservatively.
